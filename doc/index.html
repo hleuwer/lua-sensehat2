@@ -1,0 +1,1183 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+<head>
+    <title>Reference</title>
+    <link rel="stylesheet" href="ldoc.css" type="text/css" />
+</head>
+<body>
+
+<div id="container">
+
+<div id="product">
+	<div id="product_logo"></div>
+	<div id="product_name"><big><b></b></big></div>
+	<div id="product_description"></div>
+</div> <!-- id="product" -->
+
+
+<div id="main">
+
+
+<!-- Menu -->
+
+<div id="navigation">
+<br/>
+<h1>ldoc</h1>
+
+
+<h2>Contents</h2>
+<ul>
+<li><a href="#LED_matrix_control">LED matrix control </a></li>
+<li><a href="#Miscellaneous">Miscellaneous </a></li>
+<li><a href="#Humidity_Sensor">Humidity Sensor </a></li>
+<li><a href="#Temperature_Sensors">Temperature Sensors </a></li>
+<li><a href="#Pressure_Sensor">Pressure Sensor </a></li>
+<li><a href="#IMU__Sensor">IMU  Sensor </a></li>
+</ul>
+
+
+<h2>Modules</h2>
+<ul class="nowrap">
+  <li><strong>sensehat.lua</strong></li>
+</ul>
+
+</div>
+
+<div id="content">
+
+<h1>Module <code>sensehat.lua</code></h1>
+<p>Raspberry Pi Sensehat programming in Lua.</p>
+<p></p>
+    <h3>Info:</h3>
+    <ul>
+        <li><strong>Copyright</strong>: (c) Herbert Leuwer, April 2018</li>
+        <li><strong>License</strong>: MIT</li>
+    </ul>
+
+
+<h2><a href="#LED_matrix_control">LED matrix control </a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#colors">colors</a></td>
+	<td class="summary">Predefined pixel colors.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#pattern">pattern</a></td>
+	<td class="summary">LED matrix Patterns.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#getLetterMap">getLetterMap (s)</a></td>
+	<td class="summary">Get the letter map for a letter.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#packPixel">packPixel (pix)</a></td>
+	<td class="summary">Convert pixel into 16 bit rgb565 value.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#unpackPixel">unpackPixel (rgb)</a></td>
+	<td class="summary">Convert rgb565 value into pixel.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#getRotation">getRotation ()</a></td>
+	<td class="summary">Get current rotation of diaplay.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#setPixel">setPixel (x, y, ...)</a></td>
+	<td class="summary">Set a single pixel.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#getPixel">getPixel (x, y)</a></td>
+	<td class="summary">Get pixel from frame buffer at given position.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#setPixels">setPixels (pixels)</a></td>
+	<td class="summary">Display pixels defined in a list of pixels.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#getPixels">getPixels ()</a></td>
+	<td class="summary">Read pixels from frame buffer.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#setRotation">setRotation (r, redraw)</a></td>
+	<td class="summary">Set Rotation.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#clear">clear (...)</a></td>
+	<td class="summary">Clear the display.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#showLetter">showLetter (s, fg, bg)</a></td>
+	<td class="summary">Show a letter.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#loadImage">loadImage (file, redraw)</a></td>
+	<td class="summary">Load an image from file into a pixel list and optinally display.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#flipHorizontal">flipHorizontal (redraw)</a></td>
+	<td class="summary">Flip display horizontal.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#flipVertical">flipVertical (redraw)</a></td>
+	<td class="summary">Flip display vertical.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#showMessage">showMessage (message, speed, fg, bg)</a></td>
+	<td class="summary">Display a moving message.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#setGamma">setGamma (buf)</a></td>
+	<td class="summary">The gamma attributes provides a means to define the least significant
+ 5 bits of a color value.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#getGamma">getGamma ()</a></td>
+	<td class="summary">Retviews the current active gamma lookup table.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#resetGamma">resetGamma ()</a></td>
+	<td class="summary">Reset gamma lookup table to default.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#getLowLight">getLowLight ()</a></td>
+	<td class="summary">Determine whether gamma is adusted to low light.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#setLowLight">setLowLight (value)</a></td>
+	<td class="summary">Set gamma to low light</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ledOff">ledOff ()</a></td>
+	<td class="summary">Turn LED matrix off.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#ledOn">ledOn ()</a></td>
+	<td class="summary">Turn LED matrix on.</td>
+	</tr>
+</table>
+<h2><a href="#Miscellaneous">Miscellaneous </a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#sleep">sleep (sec)</a></td>
+	<td class="summary">Sleep for a while.</td>
+	</tr>
+</table>
+<h2><a href="#Humidity_Sensor">Humidity Sensor </a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#getHumidity">getHumidity ()</a></td>
+	<td class="summary">Read humidity sensor.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#getHumidityName">getHumidityName ()</a></td>
+	<td class="summary">Get humidity sensor name.</td>
+	</tr>
+</table>
+<h2><a href="#Temperature_Sensors">Temperature Sensors </a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#getTemperatureFromHumidity">getTemperatureFromHumidity ()</a></td>
+	<td class="summary">Read temperature from humidity sensor.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#getTemperatureFromPressure">getTemperatureFromPressure ()</a></td>
+	<td class="summary">Read temperature from pressure  sensor.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#getTemperature">getTemperature ()</a></td>
+	<td class="summary">Read temperature.</td>
+	</tr>
+</table>
+<h2><a href="#Pressure_Sensor">Pressure Sensor </a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#getPressure">getPressure ()</a></td>
+	<td class="summary">Read pressure sensor.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#getPressureName">getPressureName ()</a></td>
+	<td class="summary">Get pressure sensor name.</td>
+	</tr>
+</table>
+<h2><a href="#IMU__Sensor">IMU  Sensor </a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#configImu">configImu (compassEna, gyroEna, accelEna)</a></td>
+	<td class="summary">Configure IMU sensor or usage of sensor to calculate orientation.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#getOrientationRadians">getOrientationRadians ()</a></td>
+	<td class="summary">Read orientation in radians using all sensors.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#getOrientationDegrees">getOrientationDegrees ()</a></td>
+	<td class="summary">Read orientation in degrees using all sensors..</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#getAccelerometerRaw">getAccelerometerRaw ()</a></td>
+	<td class="summary">Read accelerometer raw data.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#getAccelerometer">getAccelerometer ()</a></td>
+	<td class="summary">Read orientation from accelerometer.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#getGyroscopeRaw">getGyroscopeRaw ()</a></td>
+	<td class="summary">Read the gyroscope raw data.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#getGyroscope">getGyroscope ()</a></td>
+	<td class="summary">Read orientation from gyroscope in degrees.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#getCompassRaw">getCompassRaw ()</a></td>
+	<td class="summary">Read raw compass data in uTesla.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#getCompass">getCompass ()</a></td>
+	<td class="summary">Read direction of north from the magnetometer in degrees.</td>
+	</tr>
+</table>
+
+<br/>
+<br/>
+
+
+    <h2 class="section-header "><a name="LED_matrix_control"></a>LED matrix control </h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "colors"></a>
+    <strong>colors</strong>
+    </dt>
+    <dd>
+    Predefined pixel colors.
+
+
+    <h3>Fields:</h3>
+    <ul>
+        <li><span class="parameter">red</span>
+
+        </li>
+        <li><span class="parameter">green</span>
+
+        </li>
+        <li><span class="parameter">blue</span>
+
+        </li>
+        <li><span class="parameter">yellow</span>
+
+        </li>
+        <li><span class="parameter">violett</span>
+
+        </li>
+        <li><span class="parameter">white</span>
+
+        </li>
+        <li><span class="parameter">black</span>
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "pattern"></a>
+    <strong>pattern</strong>
+    </dt>
+    <dd>
+    LED matrix Patterns.
+
+
+    <h3>Fields:</h3>
+    <ul>
+        <li><span class="parameter">off</span>
+        display off
+        </li>
+        <li><span class="parameter">on</span>
+        display on
+        </li>
+        <li><span class="parameter">checkerboard</span>
+        checkerboard
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "getLetterMap"></a>
+    <strong>getLetterMap (s)</strong>
+    </dt>
+    <dd>
+    Get the letter map for a letter.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">s</span>
+         string to look up.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        pixel field representing the letter.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "packPixel"></a>
+    <strong>packPixel (pix)</strong>
+    </dt>
+    <dd>
+    Convert pixel into 16 bit rgb565 value.
+ Format: (hi,lo) = (rrrrrggg, gggbbbbb).
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">pix</span>
+         Pixel {r,g,b} to convert.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        Two byte value representing pixel in rgb565 notation.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "unpackPixel"></a>
+    <strong>unpackPixel (rgb)</strong>
+    </dt>
+    <dd>
+    Convert rgb565 value into pixel.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">rgb</span>
+         Number representing pixel to convert.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        Table {r,g,b} describing the pixel.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "getRotation"></a>
+    <strong>getRotation ()</strong>
+    </dt>
+    <dd>
+    Get current rotation of diaplay.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        Rotation as number 0, 90, 180 or 270.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "setPixel"></a>
+    <strong>setPixel (x, y, ...)</strong>
+    </dt>
+    <dd>
+    Set a single pixel.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">x</span>
+         Number representing x coordinate.
+        </li>
+        <li><span class="parameter">y</span>
+         Number reprenseting y coordinate.
+        </li>
+        <li><span class="parameter">...</span>
+         PIxel as table or numbers.
+        </li>
+    </ul>
+
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <li><pre class="example">setPixel(<span class="number">1</span>, <span class="number">2</span>, r, g, b)</pre></li>
+        <li><pre class="example">setPixel(<span class="number">1</span>, <span class="number">2</span>, {r, g, b})</pre></li>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "getPixel"></a>
+    <strong>getPixel (x, y)</strong>
+    </dt>
+    <dd>
+    Get pixel from frame buffer at given position.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">x</span>
+         X coordinate.
+        </li>
+        <li><span class="parameter">y</span>
+         y coordinate.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        Pixel as table {r,g,b}.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "setPixels"></a>
+    <strong>setPixels (pixels)</strong>
+    </dt>
+    <dd>
+    Display pixels defined in a list of pixels.
+ The function may display only a subset of possible 64 (8x8) pixels.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">pixels</span>
+         List of pixels {{r,g,b}, ..., {r,g,b}}
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "getPixels"></a>
+    <strong>getPixels ()</strong>
+    </dt>
+    <dd>
+    Read pixels from frame buffer.
+ The function always returns all 64 (8x8) pixels.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        List of pixels.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "setRotation"></a>
+    <strong>setRotation (r, redraw)</strong>
+    </dt>
+    <dd>
+    Set Rotation.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">r</span>
+         Rotation value: 0, 90,180, 270 degree.
+        </li>
+        <li><span class="parameter">redraw</span>
+         Boolean value. If set the display is redrawn.
+               If not set, only the module's rotation parameter is set.
+
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "clear"></a>
+    <strong>clear (...)</strong>
+    </dt>
+    <dd>
+    Clear the display.
+ If no color is given 'black' is used as color.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">...</span>
+         Table with color definition.
+        </li>
+    </ul>
+
+
+
+
+    <h3>Usage:</h3>
+    <ul>
+        <li><pre class="example">clear(r,g,b)</pre></li>
+        <li><pre class="example">clear{r,g,b}</pre></li>
+    </ul>
+
+</dd>
+    <dt>
+    <a name = "showLetter"></a>
+    <strong>showLetter (s, fg, bg)</strong>
+    </dt>
+    <dd>
+    Show a letter.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">s</span>
+         Letter to display (string).
+        </li>
+        <li><span class="parameter">fg</span>
+         Foreground color as table (default: white).
+        </li>
+        <li><span class="parameter">bg</span>
+         Background color as table (default: black).
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "loadImage"></a>
+    <strong>loadImage (file, redraw)</strong>
+    </dt>
+    <dd>
+    Load an image from file into a pixel list and optinally display.
+ Note: We use image magick convert utility to read the
+       the pixels of the image directly into a Lua string via
+       pipe.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">file</span>
+         File to load and optionally display.
+        </li>
+        <li><span class="parameter">redraw</span>
+         Boolean value. If true, show image on display.
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        List of pixels.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "flipHorizontal"></a>
+    <strong>flipHorizontal (redraw)</strong>
+    </dt>
+    <dd>
+    Flip display horizontal.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">redraw</span>
+         Redraw if nil or true (default true).
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        Flipped Pixels
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "flipVertical"></a>
+    <strong>flipVertical (redraw)</strong>
+    </dt>
+    <dd>
+    Flip display vertical.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">redraw</span>
+         Redraw if nil or true (default true).
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        Flipped Pixels
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "showMessage"></a>
+    <strong>showMessage (message, speed, fg, bg)</strong>
+    </dt>
+    <dd>
+    Display a moving message.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">message</span>
+         Message to display.
+        </li>
+        <li><span class="parameter">speed</span>
+         Speed in seconds per pixel shift.
+        </li>
+        <li><span class="parameter">fg</span>
+         Foreground color.
+        </li>
+        <li><span class="parameter">bg</span>
+         Background color.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "setGamma"></a>
+    <strong>setGamma (buf)</strong>
+    </dt>
+    <dd>
+    The gamma attributes provides a means to define the least significant
+ 5 bits of a color value.  These bits are replaced by the value given
+ in a lookup table using the index as key and the stored value as
+ replacement. The value must be in the range of 0 to 31.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">buf</span>
+         Lookup table with 32 values.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "getGamma"></a>
+    <strong>getGamma ()</strong>
+    </dt>
+    <dd>
+    Retviews the current active gamma lookup table.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        Current active gamma lookup table.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "resetGamma"></a>
+    <strong>resetGamma ()</strong>
+    </dt>
+    <dd>
+    Reset gamma lookup table to default.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "getLowLight"></a>
+    <strong>getLowLight ()</strong>
+    </dt>
+    <dd>
+    Determine whether gamma is adusted to low light.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        true or false.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "setLowLight"></a>
+    <strong>setLowLight (value)</strong>
+    </dt>
+    <dd>
+    Set gamma to low light
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">value</span>
+         true or false.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ledOff"></a>
+    <strong>ledOff ()</strong>
+    </dt>
+    <dd>
+    Turn LED matrix off.
+
+
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "ledOn"></a>
+    <strong>ledOn ()</strong>
+    </dt>
+    <dd>
+    Turn LED matrix on.
+
+
+
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Miscellaneous"></a>Miscellaneous </h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "sleep"></a>
+    <strong>sleep (sec)</strong>
+    </dt>
+    <dd>
+    Sleep for a while.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">sec</span>
+         Sleep time in seconds, e.g. 0.2 seconds.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Humidity_Sensor"></a>Humidity Sensor </h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "getHumidity"></a>
+    <strong>getHumidity ()</strong>
+    </dt>
+    <dd>
+    Read humidity sensor.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        Relative humidity in percent.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "getHumidityName"></a>
+    <strong>getHumidityName ()</strong>
+    </dt>
+    <dd>
+    Get humidity sensor name.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        Name of humidity sensor.
+    </ol>
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Temperature_Sensors"></a>Temperature Sensors </h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "getTemperatureFromHumidity"></a>
+    <strong>getTemperatureFromHumidity ()</strong>
+    </dt>
+    <dd>
+    Read temperature from humidity sensor.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        Temperature in degree celsius.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "getTemperatureFromPressure"></a>
+    <strong>getTemperatureFromPressure ()</strong>
+    </dt>
+    <dd>
+    Read temperature from pressure  sensor.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        Temperature in degree celsius.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "getTemperature"></a>
+    <strong>getTemperature ()</strong>
+    </dt>
+    <dd>
+    Read temperature.
+ The value is read from humidity sensor.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        Temperature in degree celsius.
+    </ol>
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="Pressure_Sensor"></a>Pressure Sensor </h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "getPressure"></a>
+    <strong>getPressure ()</strong>
+    </dt>
+    <dd>
+    Read pressure sensor.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        Relative pressure in mbar.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "getPressureName"></a>
+    <strong>getPressureName ()</strong>
+    </dt>
+    <dd>
+    Get pressure sensor name.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        Name of pressure sensor.
+    </ol>
+
+
+
+
+</dd>
+</dl>
+    <h2 class="section-header "><a name="IMU__Sensor"></a>IMU  Sensor </h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "configImu"></a>
+    <strong>configImu (compassEna, gyroEna, accelEna)</strong>
+    </dt>
+    <dd>
+    Configure IMU sensor or usage of sensor to calculate orientation.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">compassEna</span>
+         Enable compass.
+        </li>
+        <li><span class="parameter">gyroEna</span>
+         Enable gyrometer.
+        </li>
+        <li><span class="parameter">accelEna</span>
+         Enable magnetometer.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "getOrientationRadians"></a>
+    <strong>getOrientationRadians ()</strong>
+    </dt>
+    <dd>
+    Read orientation in radians using all sensors.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        Orientation in radians as table: {roll, pitch, yaw}.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "getOrientationDegrees"></a>
+    <strong>getOrientationDegrees ()</strong>
+    </dt>
+    <dd>
+    Read orientation in degrees using all sensors..
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        Orientation in degrees  as table: {roll, pitch, yaw}.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "getAccelerometerRaw"></a>
+    <strong>getAccelerometerRaw ()</strong>
+    </dt>
+    <dd>
+    Read accelerometer raw data.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        Accelerometer raw data in G or m/s^2 as table {x, y, z}
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "getAccelerometer"></a>
+    <strong>getAccelerometer ()</strong>
+    </dt>
+    <dd>
+    Read orientation from accelerometer.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        Orientation from accelerometer in degrees as table {roll, pitch, yaw}.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "getGyroscopeRaw"></a>
+    <strong>getGyroscopeRaw ()</strong>
+    </dt>
+    <dd>
+    Read the gyroscope raw data.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        Gyroscope raw data in rad/s as table {x, y, z}.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "getGyroscope"></a>
+    <strong>getGyroscope ()</strong>
+    </dt>
+    <dd>
+    Read orientation from gyroscope in degrees.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        Orientation from gyroscope in degrees as table {roll, pitch, yaw}.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "getCompassRaw"></a>
+    <strong>getCompassRaw ()</strong>
+    </dt>
+    <dd>
+    Read raw compass data in uTesla.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        Compass raw data in uTesla as table {x, y, z}
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "getCompass"></a>
+    <strong>getCompass ()</strong>
+    </dt>
+    <dd>
+    Read direction of north from the magnetometer in degrees.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        Direction from north in degrees.
+    </ol>
+
+
+
+
+</dd>
+</dl>
+
+
+</div> <!-- id="content" -->
+</div> <!-- id="main" -->
+<div id="about">
+<i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
+<i style="float:right;">Last updated 2018-04-30 16:45:46 </i>
+</div> <!-- id="about" -->
+</div> <!-- id="container" -->
+</body>
+</html>

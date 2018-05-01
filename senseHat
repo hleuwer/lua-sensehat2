@@ -1,0 +1,98 @@
+#!/usr/bin/env lua
+
+local sense = require "sensehat"
+
+local function printf(fmt, ...)
+   io.stdout:write(string.format(fmt .."\n", ...))
+end
+local function fprintf(fmt, ...)
+   io.stderr:write(string.format(fmt .."\n", ...))
+end
+
+
+local tusage = {
+   "usage: tempSensor OPTIONS",
+   "OPTIONS:",
+   "  -h           show this help",
+   "  -n name      read sensor by name",
+   "  -v           do not show units",
+}
+function usage()
+   print(table.concat(tusage, "\n"))
+end
+
+
+function main(...)
+   local args = {select(1, ...)}
+   local i = 1
+   local name
+   local unit = true
+   while i <= #args do
+      arg = args[i]
+      if arg == "-n" then
+         name = args[i+1]
+         i = i + 1
+      elseif arg == "-h" then
+         usage()
+         return 0
+      elseif arg == "-v" then
+         unit = false
+      else
+         fprintf("invalid argument %q", arg)
+         return 1
+      end
+      i = i + 1
+   end
+   local d, u, f, rd
+   if name == "temperature" then
+      d = sense.temperature()
+      u = "°C"
+      f = "%.2f"
+   elseif name == "humidity" then
+      d = sense.humidity()
+      u = "%"
+      f = "%.2f"
+   elseif name == "pressure" then
+      d = sense.pressure()
+      u = "mbar"
+      f = "%.1f"
+   elseif name == "gravity" then
+      d = sense.getAccelerometerRaw().z
+      u = "G"
+      f = "%.5f"
+   elseif name == "compass" then
+      d = sense.getCompass()
+      u = "deg"
+      f = "%.1f"
+   elseif name == "compassX" then
+      rd = sense.getCompassRaw()
+      d = rd.x
+      u = "uT"
+      f = "%.3f"
+   elseif name == "compassY" then
+      rd = sense.getCompassRaw()
+      d = rd.y
+      u = "uT"
+      f = "%.3f"
+   elseif name == "compassZ" then
+      rd = sense.getCompassRaw()
+      d = rd.z
+      u = "uT"
+      f = "%.3f"
+   elseif name == "echotest" then
+      printf("Hello World!")
+      return 0
+   else
+      fprintf("error: unknown sensor")
+      os.exit(1)
+   end
+   if unit == true then
+      printf(f.." %s", d, u)
+   else
+      printf(f, d)
+   end
+   return 0
+end
+
+return main(...)
+
