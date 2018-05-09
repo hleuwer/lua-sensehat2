@@ -1,6 +1,7 @@
 -------------------------------------------------------------------------------
 -- Raspberry Pi Sensehat programming in Lua.
--- Main module: humidity, pressure, temperature sensors and inertial sensor IMU
+-- Humidity, pressure, temperature sensors, inertial sensor IMU and Joystick
+--
 -- @module sensehat.lua
 -- @copyright (c) Herbert Leuwer, April 2018
 -- @license MIT
@@ -14,6 +15,7 @@ local posix = require "posix"
 local pwd = require "posix.pwd"
 local alien = require "alien"
 local rtimu = require "rtimu"
+local struct = require "struct"
 
 local libc = alien.default
 
@@ -40,6 +42,53 @@ local TEXT_IMAGE_FILE = "/usr/local/share/sense_hat/sense_hat_text.png"
 local TEXT_FILE = "/usr/local/share/sense_hat/sense_hat_text.txt"
 
 local imuSettingsFile = "RTIMULib"
+
+local DIRECTION_UP     = 'up'
+local DIRECTION_DOWN   = 'down'
+local DIRECTION_LEFT   = 'left'
+local DIRECTION_RIGHT  = 'right'
+local DIRECTION_MIDDLE = 'middle'
+local DIRECTION_ENTER  = 'enter'
+
+local ACTION_PRESSED  = 'pressed'
+local ACTION_RELEASED = 'released'
+local ACTION_HELD     = 'held'
+
+local inputEvent = {
+   "timestamp",
+   "direction",
+   "action"
+}
+
+local SENSE_HAT_EVDEV_NAME = "Raspberry Pi Sense HAT Joystick"
+-- Note: lua-struct has a notion of 8 bytes for long - we need to change the format
+--       from 'l' ot 'i'.
+--local EVENT_FORMAT = "llHHI" -- long, long, ushort, ushort, uint: 8+8+2+2+4=16 byte
+local EVENT_FORMAT = "iiHHI" -- long, long, ushort, ushort, uint: 4+4+2+2+4=16 byte
+local EVENT_SIZE = (4+4+2+2+4)
+local STATE_RELEASE = 0
+local STATE_PRESS = 1
+local STATE_HOLD = 2
+local EV_KEY = 0x01
+local KEY_UP = 103
+local KEY_LEFT = 105
+local KEY_RIGHT = 106
+local KEY_DOWN = 108
+local KEY_ENTER = 28
+
+local directions = {
+   [KEY_UP] = DIRECTION_UP,
+   [KEY_DOWN] = DIRECTION_DOWN,
+   [KEY_LEFT] = DIRECTION_LEFT,
+   [KEY_RIGHT] = DIRECTION_RIGHT,
+   [KEY_ENTER] = DIRECTION_ENTER
+}
+
+local actions = {
+   [STATE_PRESS] = ACTION_PRESSED,
+   [STATE_RELEASE] = ACTION_RELEASED,
+   [STATE_HOLD] = ACTION_HELD
+}
 
 --
 -- Output helpers.
@@ -69,6 +118,14 @@ local function setmeta(pixels)
    return pixels
 end
 
+--
+-- Metatable for joystick events.
+--
+local eventMetatable = {
+   __tostring = function(ev)
+      return format("{timestamp=%.3f, direction=%s, action=%s}", ev.timestamp, ev.direction, ev.action)
+   end
+}
 --
 -- Table helpers.
 --
@@ -202,14 +259,16 @@ local function getSettingsFile(filename)
    if systemexists and not homeexists then
       io.popen("cp " .. systemfile .. " " .. homefile):read()
    end
-   return rtimu.RTIMUSettings(homepath .. "/" .. filename)
-   
+   local ret = rtimu.RTIMUSettings(homepath .. "/" .. filename)   
+   return ret
 end
 
 --
 -- Init IMU
 --
-local settings = getSettingsFile(imuSettingsFile)
+-- TODO: get rid of info output
+local settings = getSettingsFile(imuSettingsFile) 
+-- TODO: get rid of info output
 local imu = rtimu.RTIMU_createIMU(settings)
 local data = rtimu.RTIMU_DATA()
 local humidity = rtimu.RTHumidity_createHumidity(settings)
@@ -300,6 +359,10 @@ local rotation = 0
 local letterMap = loadTextAssets(TEXT_IMAGE_FILE, TEXT_FILE)
 local fbDevice = nil
 
+local stickFileName
+local stickFile
+local callbacks = {}
+local taskfuncs = {}
 
 --
 -- Read pixels for given character.
@@ -461,14 +524,80 @@ local function getRawData(validkey, datakey)
    end
 end
 
+---
+-- Discover joystic device file and return it's name
+--
+local function stickDevice()
+   for fn in lfs.dir("/sys/class/input") do
+      if fn and fn:sub(1,5) == "event" then
+         local fin = io.open("/sys/class/input/"..fn.."/device/name", "r")
+         local name = fin:read()
+         if name == SENSE_HAT_EVDEV_NAME then
+            local evdev = "/dev/input/" .. fn
+            local fin = io.open(evdev, "r")
+            --            if io.open(evdev, "r") then
+            if fin then
+               return evdev
+            end
+         end
+      end
+   end
+end
+
+---
+-- Read an event from joystick device
+--
+local function read()
+   local event = stickFile:read(EVENT_SIZE)
+   local tvSec, tvUsec, typ, code, val = struct.unpack(EVENT_FORMAT, event)
+   if typ == EV_KEY then
+      local t = {
+         timestamp = tvSec + (tvUsec / 1000000),
+         direction = directions[code],
+         action = actions[val]
+      }
+      setmetatable(t, eventMetatable)
+      print(t)
+      return t
+   else
+      return nil, "no event"
+   end
+end
+
+---
+-- Wait for an event.
+--
+local function wait(timeout)
+   local fds = {
+      [stickFileDescr] = {events={IN=true}}
+   }
+   local done = posix.poll(fds, timout)
+   return done == 1
+end
+
+local callbacks = {}
+
+local function installCallback(direction, cbfunc, ...)
+   printf("installCallback(): dir=%s cbfunc=%s", direction, cbfunc)
+   callbacks[direction] = {
+      func = cbfunc,
+      args = table.pack(...)
+   }
+end
+
+
+stickFileName = stickDevice()
+--printf("INFO: stick file name  : %s", stickFileName)
+stickFile = io.open(stickFileName, "r")
+--printf("INFO: stick file handle: %s", stickFile)
+stickFileDescr = posix.fileno(stickFile)
+--printf("INFO: stick file descr : %d", stickFileDescr)
+
 -------------------------------------------------------------------------------
 -- Sense Hat Module
 -------------------------------------------------------------------------------
 local M = {}
-_ENV = setmetatable(M,{
-      __index = _G
-})
-
+_ENV = setmetatable(M,{__index = _G})
 
 -------------------------------------------------------------------------------
 -- LED matrix control.
@@ -1199,5 +1328,141 @@ function getCompass()
       return nil
    end
 end
+
+-------------------------------------------------------------------------------
+-- Joystick
+-- @section STICK
+-------------------------------------------------------------------------------
+
+-------------------------------------------------------------------------------
+--- Return list of all pending joystick events that occured since the last
+-- call of this function.
+-- @return List of events or empty list if no events occured.
+---
+function getEvents()
+   local t = {}
+   while wait(0) do
+      event = read()
+      if event ~= nil then
+         tinsert(t, event)
+      else
+         break
+      end
+   end
+   return t
+end
+
+-------------------------------------------------------------------------------
+--- Wait until a joystick event becomes available.
+-- Returns the event as input event tuple in a table.
+-- If parameter emptybuffer is true, already pending events are discarded
+-- before entering the wait loop. This is most useful if you are only
+-- interested in "pressed" events.
+-- @param emptybuffer boolean If true discard pending events
+-- @return Event as table.
+---
+function waitEvent(emptybuffer)
+   emptybuffer = emptybuffer or false
+   if emptybuffer == true then
+      while wait(0) do
+         read()
+      end
+   end
+   while wait() do
+      local event = read()
+      if event ~= nil then
+         return event
+      end
+   end
+   return nil, "no event"
+end
+
+local function killTask(cb)
+   if cb then
+      if cb.co and coroutine.status(cb.co) == "suspended" then
+         coroutine.resume(cb.co, "exit")
+         return true
+      end
+   end
+   return false
+end
+
+
+-------------------------------------------------------------------------------
+--- Register a callback function.
+-- The given function is called when the corresponding event occurs.
+-- The function must run to completion.
+-- When the event occurs the registered callback function receive the event
+-- an the given additional parameters as arguments: func(event, ...).
+-- Note, that you can register either a callback function or a task for one
+-- specific event.
+-- @param dir Direction of event.
+-- @param func Function to be used as callback.
+-- @param ... Parameters to be passed to coroutine.
+---
+function registerCallback(dir, func, ...)
+   local cb = callbacks[dir] or {}
+   killTask(cb)
+   cb.args = table.pack(...)
+   cb.task = func
+   callbacks[dir] = cb
+end
+
+-------------------------------------------------------------------------------
+--- Register a coroutine for event capture.
+-- The given function becomes the body of the coroutine.
+-- Upon entry the coroutine function receives an event and the given
+-- additonal parameters as arguments: func(event, ...).
+-- Everytime the coroutine yields a new event is delivered.
+-- Note, that you can register either a callback function or a task for one
+-- specific event.
+-- @param dir Direction of event.
+-- @param func Function to be used as body of the coroutine.
+-- @param ... Parameters to be passed to coroutine.
+function registerTask(dir, func, ...)
+   local cb = callbacks[dir] or {}
+   local ref = taskfuncs[func]
+   if ref  then
+      cb.args = ref.args
+      cb.task = ref.task
+      callbacks[dir] = cb
+   else
+      killTask(cb)
+      cb.args = table.pack(...)
+      cb.task = coroutine.wrap(func)
+      taskfuncs[func] = cb
+      callbacks[dir] = cb
+   end
+end
+
+-------------------------------------------------------------------------------
+-- Yields running coroutine and delivers a new joystick event.
+-- @return Event as table
+--         {timestamp=TIMESTAMP, direction=DIRECTION, action=ACTION}.
+function receiveEvent()
+   return coroutine.yield()
+end
+
+-------------------------------------------------------------------------------
+--- Joystick event loop.
+-- Never ends.
+--
+function loop()
+   local ev = waitEvent()
+   while ev ~= nil do
+      local cb = callbacks[ev.direction]
+      if cb and cb.task then
+         cb.task(ev, table.unpack(cb.args))
+      end
+      ev = waitEvent()
+   end
+end
+
+---
+-- API compatibility.
+--
+--temperature = getTemperature
+--humidity = getHumidity
+--pressure = getPressure
 
 return _ENV

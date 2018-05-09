@@ -45,15 +45,15 @@ function main(...)
    end
    local d, u, f, rd
    if name == "temperature" then
-      d = sense.temperature()
+      d = sense.getTemperature()
       u = "°C"
       f = "%.2f"
    elseif name == "humidity" then
-      d = sense.humidity()
+      d = sense.getHumidity()
       u = "%"
       f = "%.2f"
    elseif name == "pressure" then
-      d = sense.pressure()
+      d = sense.getPressure()
       u = "mbar"
       f = "%.1f"
    elseif name == "gravity" then

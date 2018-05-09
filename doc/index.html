@@ -35,6 +35,7 @@
 <li><a href="#Temperature_Sensors">Temperature Sensors </a></li>
 <li><a href="#Pressure_Sensor">Pressure Sensor </a></li>
 <li><a href="#IMU__Sensor">IMU  Sensor </a></li>
+<li><a href="#Joystick">Joystick </a></li>
 </ul>
 
 
@@ -49,7 +50,9 @@
 
 <h1>Module <code>sensehat.lua</code></h1>
 <p>Raspberry Pi Sensehat programming in Lua.</p>
-<p></p>
+<p>
+ Humidity, pressure, temperature sensors, inertial sensor IMU and Joystick
+</p>
     <h3>Info:</h3>
     <ul>
         <li><strong>Copyright</strong>: (c) Herbert Leuwer, April 2018</li>
@@ -238,6 +241,34 @@
 	<tr>
 	<td class="name" nowrap><a href="#getCompass">getCompass ()</a></td>
 	<td class="summary">Read direction of north from the magnetometer in degrees.</td>
+	</tr>
+</table>
+<h2><a href="#Joystick">Joystick </a></h2>
+<table class="function_list">
+	<tr>
+	<td class="name" nowrap><a href="#getEvents">getEvents ()</a></td>
+	<td class="summary">Return list of all pending joystick events that occured since the last
+ call of this function.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#waitEvent">waitEvent (emptybuffer)</a></td>
+	<td class="summary">Wait until a joystick event becomes available.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#registerCallback">registerCallback (dir, func, ...)</a></td>
+	<td class="summary">Register a callback function.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#registerTask">registerTask (dir, func, ...)</a></td>
+	<td class="summary">Register a coroutine for event capture.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#receiveEvent">receiveEvent ()</a></td>
+	<td class="summary">Yields running coroutine and delivers a new joystick event.</td>
+	</tr>
+	<tr>
+	<td class="name" nowrap><a href="#loop">loop ()</a></td>
+	<td class="summary">Joystick event loop.</td>
 	</tr>
 </table>
 
@@ -1170,13 +1201,166 @@
 
 </dd>
 </dl>
+    <h2 class="section-header "><a name="Joystick"></a>Joystick </h2>
+
+    <dl class="function">
+    <dt>
+    <a name = "getEvents"></a>
+    <strong>getEvents ()</strong>
+    </dt>
+    <dd>
+    Return list of all pending joystick events that occured since the last
+ call of this function.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        List of events or empty list if no events occured.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "waitEvent"></a>
+    <strong>waitEvent (emptybuffer)</strong>
+    </dt>
+    <dd>
+    Wait until a joystick event becomes available.
+ Returns the event as input event tuple in a table.
+ If parameter emptybuffer is true, already pending events are discarded
+ before entering the wait loop. This is most useful if you are only
+ interested in "pressed" events.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">emptybuffer</span>
+         boolean If true discard pending events
+        </li>
+    </ul>
+
+    <h3>Returns:</h3>
+    <ol>
+
+        Event as table.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "registerCallback"></a>
+    <strong>registerCallback (dir, func, ...)</strong>
+    </dt>
+    <dd>
+    Register a callback function.
+ The given function is called when the corresponding event occurs.
+ The function must run to completion.
+ When the event occurs the registered callback function receive the event
+ an the given additional parameters as arguments: func(event, ...).
+ Note, that you can register either a callback function or a task for one
+ specific event.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">dir</span>
+         Direction of event.
+        </li>
+        <li><span class="parameter">func</span>
+         Function to be used as callback.
+        </li>
+        <li><span class="parameter">...</span>
+         Parameters to be passed to coroutine.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "registerTask"></a>
+    <strong>registerTask (dir, func, ...)</strong>
+    </dt>
+    <dd>
+    Register a coroutine for event capture.
+ The given function becomes the body of the coroutine.
+ Upon entry the coroutine function receives an event and the given
+ additonal parameters as arguments: func(event, ...).
+ Everytime the coroutine yields a new event is delivered.
+ Note, that you can register either a callback function or a task for one
+ specific event.
+
+
+    <h3>Parameters:</h3>
+    <ul>
+        <li><span class="parameter">dir</span>
+         Direction of event.
+        </li>
+        <li><span class="parameter">func</span>
+         Function to be used as body of the coroutine.
+        </li>
+        <li><span class="parameter">...</span>
+         Parameters to be passed to coroutine.
+        </li>
+    </ul>
+
+
+
+
+
+</dd>
+    <dt>
+    <a name = "receiveEvent"></a>
+    <strong>receiveEvent ()</strong>
+    </dt>
+    <dd>
+    Yields running coroutine and delivers a new joystick event.
+
+
+
+    <h3>Returns:</h3>
+    <ol>
+
+        Event as table
+         {timestamp=TIMESTAMP, direction=DIRECTION, action=ACTION}.
+    </ol>
+
+
+
+
+</dd>
+    <dt>
+    <a name = "loop"></a>
+    <strong>loop ()</strong>
+    </dt>
+    <dd>
+    Joystick event loop.
+ Never ends.
+
+
+
+
+
+
+
+
+</dd>
+</dl>
 
 
 </div> <!-- id="content" -->
 </div> <!-- id="main" -->
 <div id="about">
 <i>generated by <a href="http://github.com/stevedonovan/LDoc">LDoc 1.4.6</a></i>
-<i style="float:right;">Last updated 2018-04-30 16:45:46 </i>
+<i style="float:right;">Last updated 2018-05-09 20:51:03 </i>
 </div> <!-- id="about" -->
 </div> <!-- id="container" -->
 </body>
