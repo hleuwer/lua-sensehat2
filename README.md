@@ -1,22 +1,15 @@
-# lua-senshat
-Use the Raspberry Pi [Sense HAT](https://www.raspberrypi.org/products/sense-hat/) board with Lua.
+# Lua Sense Hat 2
+Use the Raspberry Pi [Sense HAT](https://www.raspberrypi.org/products/sense-hat/) board with Lua - and only Lua.
 
-I very much like Raspberry Pi and it's peripherals. And I very much like Lua as programming language. This is a small experimental project to make the lovely sense hat baord with it's various sensors and it's LED matrix available to Lua programs. 
+[lua-sensehat2](https://github.com/hleuwer/lua-sensehat2) is an improvement of [lua-sensehat](https://github.com/hleuwer/lua-sensehat) which bases on [Python API for Sense HAT](https://pythonhosted.org/sense-hat/) and uses [lunatic-python](https://labix.org/lunatic-python) as a bridge between Lua and Python. The disadvantage of this bridge is complexity, high memory consumption and restricted performance.
 
-However, I didn't want to reprogram all the Sense HAT stuff already available in Python. Hence, I have decided to use [lunatic-python](https://labix.org/lunatic-python) as a bridge between Pyhton and Lua. This nice piece of code is freely available at [Github](https://github.com/bastibe/lunatic-python).
+Lua Sense Hat 2 does not use the python API any longer, but provides a direct binding to C++ library [RTIMULib2] (https://github.com/richardstechnotes/RTIMULib2) for sensors and a Lua based access to LED matrix and Joystick.
+ 
+Almost all functionality of the official [Python API for Sense HAT](https://pythonhosted.org/sense-hat/) are covered. However, I renamed most of the functions to use Camel Case format for my own Lua programming convenience.
 
-Using a bridge between Python interpreter and Lua interpreter in one single process is more efficient than calling the Python interpreter as an external program from Lua for every time when accessing one of the sensors. However, I minimized Python programming and performed type conversion between Python and Lua, especially list to table (and vice versa) conversion by first serializing the object to a text representation and parsing this intermediate format by the other language. I used the penlight pretty print features to serialize Lua tables. The [penlight](https://luarocks.org/modules/steved/penlight) lua library can be freely installed from [Luarocks](https://luarocks.org/modules/steved/penlight).
+The joystick functionality is now implemented within sensehat.lua and there is no dedicated stick module. Asynchronous event capture is now supporting Lua coroutines rather than thread. See function ```registerTask()```.
 
-The module covers all functions of the official [Python API for Sense HAT](https://pythonhosted.org/sense-hat/). However, I renamed most of the functions to use Camel Case format for my own Lua programming convenience.
-
-You do not need to know how to programm in Python in order to use lua-sensehat. 
-
-Notes:
-
-* Functions delivering a python directory under Python deliver a Lua userdata in Lua with the same keys as the directory does in Python. It's easy to convert Python directories to Lua table.
-* Python lists are converted into Lua tables.
-* Functions that take a list as argument in Python take a Lua table as argument in Lua. 
-* Numers and strings are passed as numbers and strings between the two worlds.
+I use [SWIG] (http://www.swig.org/) to create he binding for RTIMULib2. As this produces a relatively large shared library a manual binding may be benefitial - but also much more work.
 
 Example:
 
@@ -32,14 +25,14 @@ local stemp = 0
 local N = tonumber(arg[1]) or 1000
 
 print("=== SENSORS ===")
-print(fmt("relative humidity: %.2f %%", sense.humidity()))
-print(fmt("pressure         : %.2f mbar", sense.pressure()))
-print(fmt("temperature      : %.2f °C", sense.temperature()))
-print(fmt("  from mhumidity : %.2f °C", sense.temperatureFromHumidity()))
-print(fmt("  from pressure  : %.2f °C", sense.temperatureFromPressure()))
+print(fmt("relative humidity: %.2f %%", sense.getHumidity()))
+print(fmt("pressure         : %.2f mbar", sense.getPressure()))
+print(fmt("temperature      : %.2f °C", sense.getTemperature()))
+print(fmt("  from mhumidity : %.2f °C", sense.getTemperatureFromHumidity()))
+print(fmt("  from pressure  : %.2f °C", sense.getTemperatureFromPressure()))
 t1 = os.time()
 for i = 1, N do
-	local temp = sense.temperature()
+	local temp = sense.getTemperature()
 	stemp = stemp + temp
 end
 local t2 = os.time()

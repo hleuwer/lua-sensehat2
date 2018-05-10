@@ -1,6 +1,5 @@
-local sense = require "sensehat2"
+local sense = require "sensehat"
 local socket = require "socket"
-local pretty = require "pl.pretty"
 
 local pixels = {
     {255, 0, 0}, {255, 0, 0}, {255, 87, 0}, {255, 196, 0}, {205, 255, 0}, {95, 255, 0}, {0, 255, 13}, {0, 255, 122},

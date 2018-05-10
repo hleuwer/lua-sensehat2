@@ -1,4 +1,4 @@
-local sense = require "sensehat2"
+local sense = require "sensehat"
 local socket = require "socket"
 
 local r,g,b = 255,0,0

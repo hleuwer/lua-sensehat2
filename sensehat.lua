@@ -557,7 +557,6 @@ local function read()
          action = actions[val]
       }
       setmetatable(t, eventMetatable)
-      print(t)
       return t
    else
       return nil, "no event"
@@ -1457,12 +1456,5 @@ function loop()
       ev = waitEvent()
    end
 end
-
----
--- API compatibility.
---
---temperature = getTemperature
---humidity = getHumidity
---pressure = getPressure
 
 return _ENV

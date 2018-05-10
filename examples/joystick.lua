@@ -10,7 +10,7 @@ local pixels = {
 
 local function setPixels(pixels, col)
    for i,p in ipairs(pixels) do
-      sense.setPixel(p[1]+1,p[2]+1,col)
+      sense.setPixel(p[1],p[2],col)
    end
 end
 
@@ -23,7 +23,7 @@ black, white  = {0,0,0}, {255,255,255}
 local running = true
 
 while running == true do
-   local event = sense.stick.waitEvent()
+   local event = sense.waitEvent()
    if event.action == "pressed" then
       handleEvent(event, white)
    elseif event.action == "released" then
