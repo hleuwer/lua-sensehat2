@@ -748,7 +748,7 @@ function setPixel(x, y, ...)
    end
    local f = assert(io.open(fbDevice, "wb"))
    local map = pixMap[getRotation()]
-   f:seek("set", map[x+1][y+1] * 2)
+   f:seek("set", map[y+1][x+1] * 2)
    f:write(packPixel(pixel))
    f:close()
 end
