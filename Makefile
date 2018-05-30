@@ -3,12 +3,14 @@ SNMPEXTENSION=senseHat
 RTIMUBINDING=rtimu.so
 LETTER_T=etc/sense_hat_text.txt
 LETTER_P=etc/sense_hat_text.png
+SNMPCONF=snmpd.conf
 LEDOFF=ledoff
 LUAV=5.2
 INSTALL_LUA=/usr/local/share/lua/$(LUAV)
 INSTALL_BIN=/usr/local/bin
 INSTALL_LIB=/usr/local/lib/lua/$(LUAV)
 INSTALL_SHARE=/usr/local/share/sense_hat
+INSTALL_SNMP=/etc/snmp
 
 doc::
 	ldoc sensehat.lua
@@ -20,10 +22,19 @@ install:
 	mkdir -p $(INSTALL_SHARE) && cp $(LETTER_T) $(INSTALL_SHARE)
 	cp $(LETTER_P) $(INSTALL_SHARE)
 
-uninstall:
+install-snmp:
+	mv $(INSTALL_SNMP)/$(SNMPCONF) $(INSTALL_SNMP)/$(SNMPCONF).backup-sensehat
+	cp etc/$(SNMPCONF) $(INSTALL_SNMP)
+	sudo service snmpd restart
+
+uninstall: 
 	rm -rf $(INSTALL_LUA)/$(MODULE)
 	rm -rf $(INSTALL_BIN)/$(SNMPEXTENSION)
 	rm -rf $(INSTALL_BIN)/$(LEDOFF)
+
+uninstall-snmp:
+	cp $(INSTALL_SNMP)/$(SNMPCONF).backup-sensehat $(INSTALL_SNMP)/$(SNMPCONF)
+	sudo service snmpd restart
 
 install-so:
 	cp etc/$(RTIMUBINDING) $(INSTALL_LIB)

@@ -1,0 +1,57 @@
+INSTALLATION INSTRUCTIONS
+-------------------------
+
+Lua Sense Hat requires the following 3rd party components available via Github or
+Luarocks.
+
+- RTIMULib2 from Richard's Technotes.
+  C++ library for handling all the sensors on the sense hat board.
+  See https://github.com/richardstechnotes/RTIMULib2 (original)
+      https://github.com/hleuwer/RTIMULib2 (my fork of above repository with some changes)
+  
+- RTIMULib Lua Bindings
+  Lua bindings for the RTIMULib added by myself: rtimu.so
+  Located here: my forked RTIMULib2 repository with added Lua binding and a
+  small change regarding debug output.
+  A copy of the binary shared library is provided in lua-sensehat2 repository.
+  
+- matrix.lua
+  A Lua module written David Manura providing matrix operations needed for managing
+  rotation of sense hat LED matrix.
+  See https://github.com/davidm/lua-matrix
+  A copy of matrix.lua is provided in lua-sensehat2 repository.
+  
+- alien
+  Required for IOCTL call on frame buffer device file.
+  See https://luarocks.org/modules/mascarenhas/alien
+
+- lua posix
+  Lua bindings to Posix APIs.
+  See https://luarocks.org/modules/gvvaughan/luaposix
+
+- Penlight
+  Used for pretty printing pixel info
+
+- Lua Filesystem
+  Extended file system operations.
+  See https://luarocks.org/modules/hisham/luafilesystem
+
+- Lua Sockets
+  Used for subsecond sleep.
+  See https://luarocks.org/modules/luarocks/luasocket
+
+- Lua Struct
+  Packing/Unpacking of binary data in Lua strings.
+  Used for interfacing with frame buffer driver.
+  See https://luarocks.org/modules/iryont/lua-struct
+
+For installation just clone/download the lua-sensehat2 repository from
+
+    https://github.com/hleuwer/lua-sensehat2
+
+and above listed support components.
+
+Call `make install' to install sensehat.lua in the folder for shared Lua
+modules (/usr/local/share/lua/5.2).
+
+Have fun.
