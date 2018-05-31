@@ -7,9 +7,7 @@ Lua Sense Hat 2 does not use the python API any longer, but provides a direct bi
  
 Almost all functionality of the official [Python API for Sense HAT](https://pythonhosted.org/sense-hat/) are covered. However, I renamed most of the functions to use Camel Case format for my own Lua programming convenience.
 
-The joystick functionality is now implemented within sensehat.lua and there is no dedicated stick module. Asynchronous event capture is now supporting Lua coroutines rather than thread. See function ```registerTask()```.
-
-I use [SWIG] (http://www.swig.org/) to create he binding for RTIMULib2. As this produces a relatively large shared library a manual binding may be benefitial - but also much more work.
+The joystick functionality is now implemented within sensehat.lua and there is no dedicated stick module. Asynchronous event capture is now supporting Lua coroutines rather than preemptive threads. The Lua script registers a function receiving a joystick event and a user defined parameter as a callback function or as a task by calling ```registerCallback(dir, func, param)```or ```registerTask(dir, func, param).``` The callback function is called whenever the associated event is issued by the joystick. The task receives events by calling the function ```event = receiveEvent().``` If no event was issued this function yields the processor. The Lua thread is resumed upon reception of a joystick event. Note, that the user defined parameter is given to the threads main function and is available as upvalue during the lifetime of the thread. 
 
 Example:
 
