@@ -54,4 +54,10 @@ and above listed support components.
 Call `make install' to install sensehat.lua in the folder for shared Lua
 modules (/usr/local/share/lua/5.2).
 
+Adjust permissions in /etc/group by adding your username to the list of
+valid users for the following groups: video, input, i2c, spi, gpio.
+Without this you won't be able to access the relevant device files.
+
+Log out and in again or simply reboot to activate these changes.
+
 Have fun.
