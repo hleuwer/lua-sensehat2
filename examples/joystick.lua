@@ -5,6 +5,7 @@ local pixels = {
    down   = {{3,7},{4,7}},
    left   = {{0,3},{0,4}},
    right  = {{7,3},{7,4}},
+   enter = {{3,3},{4,3},{3,4},{4,4}},
    middle = {{3,3},{4,3},{3,4},{4,4}},
 }
 
@@ -15,6 +16,7 @@ local function setPixels(pixels, col)
 end
 
 function handleEvent(event, color)
+   print("#1#", event.direction)
    setPixels(pixels[event.direction], color)
 end
 
