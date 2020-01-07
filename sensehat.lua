@@ -247,7 +247,7 @@ end
 -- 
 local function getSettingsFile(filename)
    local inifile = string.format("%s.ini", filename)
-   local homedir = pwd.getpwuid(io.popen("id -u"):read()).pw_dir
+   local homedir = pwd.getpwuid(tonumber(io.popen("id -u"):read())).pw_dir
    local homepath = homedir .. "/" .. SETTINGS_HOME_PATH
    if not lfs.attributes(homepath) then
       lfs.mkdir(homepath)

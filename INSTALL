@@ -52,12 +52,20 @@ For installation just clone/download the lua-sensehat2 repository from
 and above listed support components.
 
 Call `make install' to install sensehat.lua in the folder for shared Lua
-modules (/usr/local/share/lua/5.2).
+modules (/usr/local/share/lua/5.x). This installs also the following
+programs in /usr/local/bin:
+* ledoff - turns off the sensehat LED matrix
+* binclock - implements a binary clock (see examples/binclock.lua).
+
+The binary clock can be started as a service. See etc/binclock.service
+for the corresponding systemd service description.
 
 Adjust permissions in /etc/group by adding your username to the list of
 valid users for the following groups: video, input, i2c, spi, gpio.
 Without this you won't be able to access the relevant device files.
 
 Log out and in again or simply reboot to activate these changes.
+
+
 
 Have fun.

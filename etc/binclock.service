@@ -1,0 +1,12 @@
+[Unit]
+Description=Binary Clock
+After=network.target
+Documentation=https://github.com/hleuwer/lua-sensehat2/blob/master/README.md
+
+[Service]
+ExecStart=/usr/local/bin/binclock
+User=root
+
+[Install]
+WantedBy=multi-user.target
+
