@@ -19,6 +19,7 @@ local struct = require "struct"
 
 local libc = alien.default
 
+local DEBUG=nil
 --
 -- Make requently used functions local.
 --
@@ -98,7 +99,9 @@ local function printf(fmt, ...)
 end
 
 local function dprintf(fmt, ...)
-   printf("==> "..fmt, ...)
+   if DEBUG == true then
+      printf("==> "..fmt, ...)
+   end
 end
 
 --
@@ -531,9 +534,12 @@ local function stickDevice()
    for fn in lfs.dir("/sys/class/input") do
       if fn and fn:sub(1,5) == "event" then
          local fin = io.open("/sys/class/input/"..fn.."/device/name", "r")
+         dprintf("INFO: %s", "/sys/class/input/"..fn.."/device/name")
          local name = fin:read()
+	 dprintf("INFO: name=%s", name)
          if name == SENSE_HAT_EVDEV_NAME then
             local evdev = "/dev/input/" .. fn
+	    dprintf("INFO: evdev=%s", evdev)
             local fin = io.open(evdev, "r")
             --            if io.open(evdev, "r") then
             if fin then
@@ -586,11 +592,11 @@ end
 
 
 stickFileName = stickDevice()
---printf("INFO: stick file name  : %s", stickFileName)
+dprintf("INFO: stick file name  : %s", stickFileName)
 stickFile = io.open(stickFileName, "r")
---printf("INFO: stick file handle: %s", stickFile)
+dprintf("INFO: stick file handle: %s", stickFile)
 stickFileDescr = posix.fileno(stickFile)
---printf("INFO: stick file descr : %d", stickFileDescr)
+dprintf("INFO: stick file descr : %d", stickFileDescr)
 
 -------------------------------------------------------------------------------
 -- Sense Hat Module
